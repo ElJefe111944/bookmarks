@@ -17,7 +17,7 @@ def user_login(request):
             if user.is_active:
                 login(request, user)
                 return HttpResponse('authenticated successful')
-                        
+                       
             else:
                 return HttpResponse('Disabled account')
         else:
