@@ -1,9 +1,39 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
-from .forms import LoginForm, UserRegistrationForm
+from .forms import (
+    LoginForm,
+    UserRegistrationForm,
+    UserEditForm, ProfileEditForm)
 from django.contrib.auth.decorators import login_required
 from .models import Profile
+
+
+@login_required
+def edit(request):
+    if request.method == 'POST':
+        user_form = UserEditForm(
+            instance=request.user, data=request.POST)
+        profile_form = ProfileEditForm(
+            instance=request.user.profile,
+            data=request.post,
+            files=request.FILES,
+        )
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()   
+    else:
+        user_form = UserEditForm(instance=request.user)
+        profile_form = ProfileEditForm(
+            instance=request.user.profile)
+    return render(
+        request,
+        'account/edit.html',
+        {
+            'user_form': user_form,
+            'profile_form': profile_form,
+        }
+    )
 
 
 def user_login(request):
@@ -17,7 +47,7 @@ def user_login(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                return HttpResponse('authenticated successful')                      
+                return HttpResponse('authenticated successful')                     
             else:
                 return HttpResponse('Disabled account')
         else:
