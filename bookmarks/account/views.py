@@ -7,6 +7,7 @@ from .forms import (
     UserEditForm, ProfileEditForm)
 from django.contrib.auth.decorators import login_required
 from .models import Profile
+from django.contrib import messages
 
 
 def user_login(request):
@@ -20,7 +21,7 @@ def user_login(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                return HttpResponse('authenticated successful')                     
+                return HttpResponse('authenticated successful')                    
             else:
                 return HttpResponse('Disabled account')
         else:
@@ -57,7 +58,7 @@ def register(request):
     return render(
         request, 'account/register.html',
         {'user_form': user_form})
-        
+              
 
 @login_required
 def edit(request):
@@ -71,7 +72,11 @@ def edit(request):
         )
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
-            profile_form.save()   
+            profile_form.save()  
+            messages.success(
+                request, 'Profile updated successfully') 
+        else:
+            messages.error(request, 'Error updating your profile')
     else:
         user_form = UserEditForm(instance=request.user)
         profile_form = ProfileEditForm(
@@ -84,4 +89,3 @@ def edit(request):
             'profile_form': profile_form,
         }
     )
-
