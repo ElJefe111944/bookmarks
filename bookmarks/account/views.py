@@ -58,7 +58,7 @@ def register(request):
     return render(
         request, 'account/register.html',
         {'user_form': user_form})
-              
+
 
 @login_required
 def edit(request):
@@ -67,7 +67,7 @@ def edit(request):
             instance=request.user, data=request.POST)
         profile_form = ProfileEditForm(
             instance=request.user.profile,
-            data=request.post,
+            data=request.POST,
             files=request.FILES,
         )
         if user_form.is_valid() and profile_form.is_valid():
